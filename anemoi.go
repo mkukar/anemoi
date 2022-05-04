@@ -37,9 +37,20 @@ func main() {
 	fmt.Scan(&selectedStation)
 
 	fmt.Println("Thank you. I am now looking back through time at station", stationSlice[selectedStation], "in the region of", regionSlice[selectedRegionIndx])
-	fmt.Println("This may take a few minutes...")
+	// gathers all the datasets
 	precipitationData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "pcpn", "sum")
+	snowfallData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "snow", "sum")
+	aveMonthlyTempData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "avgt", "mean")
+	lowMonthlyTempData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "mint", "min")
+	highMonthlyTempData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "maxt", "max")
+
 	fmt.Println(precipitationData)
-	// TODO
+	fmt.Println(snowfallData)
+	fmt.Println(aveMonthlyTempData)
+	fmt.Println(lowMonthlyTempData)
+	fmt.Println(highMonthlyTempData)
+	// TODO - parse datasets in an intelligent way
+
+	// TODO - report data to user on global warming (interesting things only!)
 
 }

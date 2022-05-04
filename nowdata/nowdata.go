@@ -56,7 +56,6 @@ func GetStationList(regionKey string) map[string]string {
 // pcpn Precipitation
 // return is map of year to the interface (array of year data, with T denoting no data found e.g. { 1850 : [1,2,T...12] })
 func PostStationData(stationId string, dataName string, reductionStrategy string) map[int]interface{} {
-	fmt.Println(stationId)
 	stationDataUrl := "http://data.rcc-acis.org/StnData"
 	// monthly, from beginning of dataset to present, group by year, reduce is how it summarizes the monthly data (e.g. sum)
 	paramsStr := `{"elems":[{"interval":"mly","duration":1,"name":"%s","reduce":{"reduce":"%s"},"maxmissing":"1","prec":3,"groupby":["year",1,12]}],"sid":"%s","sDate":"por","eDate":"por"}`
@@ -96,5 +95,4 @@ func PostStationData(stationId string, dataName string, reductionStrategy string
 		}
 	}
 	return resultData
-
 }
