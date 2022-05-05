@@ -10,7 +10,45 @@ import (
 	"golang.org/x/exp/maps"
 
 	"github.com/mkukar/anemoi/nowdata"
+	"github.com/mkukar/anemoi/parsedata"
 )
+
+func summarizePrecipitationData(precipitationData map[int]interface{}) {
+	annualRainfall := parsedata.GetAnnualSumPerYear(precipitationData)
+	fmt.Println(annualRainfall)
+	m, b := parsedata.LeastSquareFit(annualRainfall)
+	fmt.Println(m, b)
+	fmt.Println("PRECIPITATION TREND: ", m)
+}
+
+func summarizeSnowfallData(snowfallData map[int]interface{}) {
+	annualSnowfall := parsedata.GetAnnualSumPerYear(snowfallData)
+	fmt.Println(annualSnowfall)
+	m, b := parsedata.LeastSquareFit(annualSnowfall)
+	fmt.Println(m, b)
+	fmt.Println("SNOWFALL TREND: ", m)
+}
+
+func summarizeMinTempData(minTempData map[int]interface{}) {
+	minYearlyTemp := parsedata.GetAnnualMinPerYear(minTempData)
+	fmt.Println(minYearlyTemp)
+	m, b := parsedata.LeastSquareFit(minYearlyTemp)
+	fmt.Println("MIN YEARLY TEMP: ", m, b)
+}
+
+func summarizeMaxTempData(maxTempData map[int]interface{}) {
+	maxYearlyTemp := parsedata.GetAnnualMaxPerYear(maxTempData)
+	fmt.Println(maxYearlyTemp)
+	m, b := parsedata.LeastSquareFit(maxYearlyTemp)
+	fmt.Println("MAX YEARLY TEMP: ", m, b)
+}
+
+func summarizeAverageTempData(aveTempData map[int]interface{}) {
+	averageYearlyTemp := parsedata.GetAnnualAveragePerYear(aveTempData)
+	fmt.Println(averageYearlyTemp)
+	m, b := parsedata.LeastSquareFit(averageYearlyTemp)
+	fmt.Println("AVERAGE YEARLY TEMP: ", m, b)
+}
 
 func main() {
 	fmt.Println("Hello, I am enemoi. Let us see how climate change has affected your local area. First, a few questions...")
@@ -37,6 +75,7 @@ func main() {
 	fmt.Scan(&selectedStation)
 
 	fmt.Println("Thank you. I am now looking back through time at station", stationSlice[selectedStation], "in the region of", regionSlice[selectedRegionIndx])
+	fmt.Println("Please wait a few moments...")
 	// gathers all the datasets
 	precipitationData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "pcpn", "sum")
 	snowfallData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "snow", "sum")
@@ -44,13 +83,11 @@ func main() {
 	lowMonthlyTempData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "mint", "min")
 	highMonthlyTempData := nowdata.PostStationData(stations[stationSlice[selectedStation]], "maxt", "max")
 
-	fmt.Println(precipitationData)
-	fmt.Println(snowfallData)
-	fmt.Println(aveMonthlyTempData)
-	fmt.Println(lowMonthlyTempData)
-	fmt.Println(highMonthlyTempData)
-	// TODO - parse datasets in an intelligent way
-
-	// TODO - report data to user on global warming (interesting things only!)
-
+	fmt.Println("Summarizing how climate change has affected your local area...")
+	summarizePrecipitationData(precipitationData)
+	summarizeSnowfallData(snowfallData)
+	summarizeMinTempData(lowMonthlyTempData)
+	summarizeMaxTempData(highMonthlyTempData)
+	summarizeAverageTempData(aveMonthlyTempData)
+	fmt.Println("Looking to help? See actions you can take here https://www.un.org/actnow")
 }
