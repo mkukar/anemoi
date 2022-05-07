@@ -7,7 +7,7 @@ My first Go project!
 
 ## Usage
 1. Build: `go build`
-1. Run: `./anemoi.exe` (or equivalent)
+1. Run: `.\anemoi.exe` (or equivalent)
 1. Follow the prompts to enter your local area based on region and station name
 
 TODO - put photo here of usage
