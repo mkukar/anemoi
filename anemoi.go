@@ -22,7 +22,7 @@ func summarizePrecipitationData(precipitationData map[int]interface{}, precipStr
 	}
 	m, _ := parsedata.LeastSquareFit(annualPrecip)
 	if m < 0 {
-		fmt.Println("- Yearly", precipStr, "is decreasing at a rate of", m, "inches per year.")
+		fmt.Println("- Yearly", precipStr, "is decreasing at a rate of", fmt.Sprintf("%.2f", -1*m), "inches per year.")
 	}
 	// checks historical data if precipitation is below average
 	yearsPrecipBelowAverage := 0
@@ -50,13 +50,16 @@ func summarizePrecipitationData(precipitationData map[int]interface{}, precipStr
 		fmt.Println("- Total", precipStr, "has been below average for", yearsPrecipBelowAverageInLastDecade, "of the last 10 years")
 	}
 	if yearsPrecipBelowAverage > 1 {
-		fmt.Println("- For the past", yearsPrecipBelowAverage, "years straight,", precipStr, "has been below the historical average of", aveYearlyPrecip, "inches")
+		fmt.Println("- For the past", yearsPrecipBelowAverage, "years straight,", precipStr, "has been below the historical average of", fmt.Sprintf("%.2f", aveYearlyPrecip), "inches")
 	}
 }
 
 func summarizeMinTempData(minTempData map[int]interface{}) {
 	minYearlyTemp := parsedata.GetAnnualMinPerYear(minTempData)
-	historicalMin := parsedata.Min(minYearlyTemp)
+	historicalMin, err := parsedata.Min(minYearlyTemp)
+	if err != nil {
+		return // data is bad, so just skip summary
+	}
 	degreesAboveHistoricalMinLastDecade := make([]float64, 10)
 	lastDecadeCounter := 0
 	for i := len(minYearlyTemp) - 1; i >= len(minYearlyTemp)-10; i-- {
@@ -69,7 +72,7 @@ func summarizeMinTempData(minTempData map[int]interface{}) {
 	}
 	m, _ := parsedata.LeastSquareFit(minYearlyTemp)
 	if m > 0 {
-		fmt.Println("- The yearly minimum temperature has been increasing annually by", m, "degrees")
+		fmt.Println("- The yearly minimum temperature has been increasing annually by", fmt.Sprintf("%.2f", m), "degrees")
 	}
 }
 
@@ -77,7 +80,7 @@ func summarizeMaxTempData(maxTempData map[int]interface{}) {
 	maxYearlyTemp := parsedata.GetAnnualMaxPerYear(maxTempData)
 	m, _ := parsedata.LeastSquareFit(maxYearlyTemp)
 	if m > 0 {
-		fmt.Println("- The yearly maximum temperature has been increasing annually by", m, "degrees")
+		fmt.Println("- The yearly maximum temperature has been increasing annually by", fmt.Sprintf("%.2f", m), "degrees")
 	}
 }
 
@@ -85,17 +88,8 @@ func summarizeAverageTempData(aveTempData map[int]interface{}) {
 	averageYearlyTemp := parsedata.GetAnnualAveragePerYear(aveTempData)
 	m, _ := parsedata.LeastSquareFit(averageYearlyTemp)
 	if m > 0 {
-		fmt.Println("- The yearly average temperature has been increasing annually by", m, "degrees")
+		fmt.Println("- The yearly average temperature has been increasing annually by", fmt.Sprintf("%.2f", m), "degrees")
 	}
-}
-
-// creates html chart of temp data
-func chartTempData(aveTempData map[int]interface{}, maxTempData map[int]interface{}, minTempData map[int]interface{}, chartName string) {
-
-}
-
-func chartPrecipData(rainData map[int]interface{}, snowData map[int]interface{}, chartName string) {
-
 }
 
 func main() {
@@ -137,8 +131,5 @@ func main() {
 	summarizeMinTempData(lowMonthlyTempData)
 	summarizeMaxTempData(highMonthlyTempData)
 	summarizeAverageTempData(aveMonthlyTempData)
-	tempChartName := "temperature_data.html"
-	precipChartName := "precipitation_data.html"
-	fmt.Println("Want to dig into the data? Open the charts", tempChartName, " and ", precipChartName)
 	fmt.Println("Looking to see how you can help? See actions you can take here https://www.un.org/actnow")
 }

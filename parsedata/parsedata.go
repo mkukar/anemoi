@@ -7,6 +7,7 @@
 package parsedata
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 
@@ -29,8 +30,12 @@ func GetAnnualMinPerYear(nowdata map[int]interface{}) []float64 {
 	years := getSortedYears(nowdata)
 	for i, year := range years {
 		floatData := getInterfaceAsFloatSliceRemovingTEntries(nowdata[year])
-		yearMin := Min(floatData)
-		yearlyData[i] = yearMin
+		yearMin, err := Min(floatData)
+		if err == nil {
+			yearlyData[i] = yearMin
+		} else {
+			yearlyData[i] = 0.0
+		}
 	}
 	return yearlyData
 }
@@ -40,8 +45,12 @@ func GetAnnualMaxPerYear(nowdata map[int]interface{}) []float64 {
 	years := getSortedYears(nowdata)
 	for i, year := range years {
 		floatData := getInterfaceAsFloatSliceRemovingTEntries(nowdata[year])
-		yearMax := Max(floatData)
-		yearlyData[i] = yearMax
+		yearMax, err := Max(floatData)
+		if err == nil {
+			yearlyData[i] = yearMax
+		} else {
+			yearlyData[i] = 0.0
+		}
 	}
 	return yearlyData
 }
@@ -65,9 +74,9 @@ func Sum(arr []float64) float64 {
 	return result
 }
 
-func Min(arr []float64) float64 {
+func Min(arr []float64) (float64, error) {
 	if len(arr) == 0 {
-		panic("Min function must have input array of length greater than 0")
+		return 0.0, fmt.Errorf("Min function must have an input array length greater than 0")
 	}
 	min := arr[0]
 	for _, v := range arr {
@@ -75,12 +84,12 @@ func Min(arr []float64) float64 {
 			min = v
 		}
 	}
-	return min
+	return min, nil
 }
 
-func Max(arr []float64) float64 {
+func Max(arr []float64) (float64, error) {
 	if len(arr) == 0 {
-		panic("Max function must have input array of length greater than 0")
+		return 0.0, fmt.Errorf("Max function must have input array of length greater than 0")
 	}
 	max := arr[0]
 	for _, v := range arr {
@@ -88,7 +97,7 @@ func Max(arr []float64) float64 {
 			max = v
 		}
 	}
-	return max
+	return max, nil
 }
 
 func Average(arr []float64) float64 {
